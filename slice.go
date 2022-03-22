@@ -1,15 +1,15 @@
-package cache
+package fastcache
 
 import (
 	"fmt"
 )
 
 type sCache struct {
-	mutex CleverMutex
-	store [][]interface{}
-	length int
+	mutex     CleverMutex
+	store     [][]interface{}
+	length    int
 	cacheSize uint64
-	cacheBit uint64
+	cacheBit  uint64
 }
 
 func newSCache(cacheBitCount uint64) (cache ICache, err error) {
@@ -38,20 +38,20 @@ func (c *sCache) Set(key uint64, value interface{}) {
 		c.store[cKey] = make([]interface{}, 2)
 		c.store[cKey][uint64(0)] = cLocalKey
 		c.store[cKey][uint64(1)] = value
-		c.length ++
+		c.length++
 	} else {
 		lenLocal := uint64(len(c.store[cKey]))
 		for i := uint64(0); i < lenLocal; i += 2 {
 			if c.store[cKey][i] == cLocalKey {
 				c.store[cKey][i+1] = value
-				c.length ++
+				c.length++
 				return
 			}
 		}
 
 		c.store[cKey] = append(c.store[cKey], cLocalKey)
 		c.store[cKey] = append(c.store[cKey], value)
-		c.length ++
+		c.length++
 	}
 }
 
@@ -91,14 +91,14 @@ func (c *sCache) Delete(key uint64) bool {
 	lenLocal := uint64(len(c.store[cKey]))
 	if lenLocal == 2 {
 		c.store[cKey] = nil
-		c.length --
+		c.length--
 		return true
 	}
 
 	for i := uint64(0); i < lenLocal; i += 2 {
 		if c.store[cKey][i] == cLocalKey {
 			c.store[cKey] = append(c.store[cKey][:i], c.store[cKey][(i+2):]...)
-			c.length --
+			c.length--
 			return true
 		}
 	}
@@ -124,7 +124,7 @@ func (c *sCache) Print() {
 			lenVArr := uint64(len(vArr))
 			for i := uint64(0); i < lenVArr; i += 2 {
 				cLocalKey := vArr[i]
-				value := vArr[i + 1]
+				value := vArr[i+1]
 				key := (cLocalKey.(uint64) << c.cacheBit) ^ uint64(cKey)
 				s += fmt.Sprintf("%v: %v, ", key, value)
 			}
@@ -137,7 +137,7 @@ func (c *sCache) Print() {
 	fmt.Print(s)
 }
 
-func (c *sCache) Iterator() <- chan interface{} {
+func (c *sCache) Iterator() <-chan interface{} {
 	c.mutex.WriteLock()
 	defer c.mutex.WriteUnlock()
 
@@ -150,7 +150,7 @@ func (c *sCache) Iterator() <- chan interface{} {
 		}
 		lenVArr := uint64(len(vArr))
 		for i := uint64(0); i < lenVArr; i += 2 {
-			value := vArr[i + 1]
+			value := vArr[i+1]
 			res <- value
 		}
 	}
@@ -169,7 +169,7 @@ func (c *sCache) Range(f func(key uint64, value interface{}) bool) {
 		lenVArr := uint64(len(vArr))
 		for i := uint64(0); i < lenVArr; i += 2 {
 			cLocalKey := vArr[i]
-			value := vArr[i + 1]
+			value := vArr[i+1]
 			key := (cLocalKey.(uint64) << c.cacheBit) ^ uint64(cKey)
 			if !f(key, value) {
 				return
@@ -191,7 +191,7 @@ func (c *sCache) ToMap() map[uint64]interface{} {
 		lenVArr := uint64(len(vArr))
 		for i := uint64(0); i < lenVArr; i += 2 {
 			cLocalKey := vArr[i]
-			value := vArr[i + 1]
+			value := vArr[i+1]
 			key := (cLocalKey.(uint64) << c.cacheBit) ^ uint64(cKey)
 			m[key] = value
 		}
@@ -213,7 +213,7 @@ func (c *sCache) TestPrintAllStructure() {
 
 		lenVArr := uint64(len(vArr))
 		for i := uint64(0); i < lenVArr; i += 2 {
-			fmt.Printf("%v: %v ", vArr[i], vArr[i + 1])
+			fmt.Printf("%v: %v ", vArr[i], vArr[i+1])
 		}
 
 		fmt.Println("}")

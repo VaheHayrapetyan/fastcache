@@ -1,9 +1,9 @@
-package cache
+package fastcache
 
 import "sync"
 
 type CleverMutex struct {
-	readMutex sync.Mutex
+	readMutex  sync.Mutex
 	writeMutex sync.Mutex
 }
 

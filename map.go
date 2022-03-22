@@ -1,12 +1,12 @@
-package cache
+package fastcache
 
 import (
 	"fmt"
 )
 
 type mCache struct {
-	mutex CleverMutex
-	store map[uint64]interface{}
+	mutex     CleverMutex
+	store     map[uint64]interface{}
 	cacheSize uint64
 }
 
@@ -58,7 +58,7 @@ func (c *mCache) Print() {
 	fmt.Print(c.store)
 }
 
-func (c *mCache) Iterator() <- chan interface{} {
+func (c *mCache) Iterator() <-chan interface{} {
 	c.mutex.WriteLock()
 	defer c.mutex.WriteUnlock()
 

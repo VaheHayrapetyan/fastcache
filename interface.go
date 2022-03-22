@@ -1,4 +1,4 @@
-package cache
+package fastcache
 
 type ICache interface {
 	Set(key uint64, value interface{})

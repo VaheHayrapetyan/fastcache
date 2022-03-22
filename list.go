@@ -1,19 +1,19 @@
-package cache
+package fastcache
 
 import "fmt"
 
 type node struct {
-	key uint64
+	key   uint64
 	value interface{}
-	next *node
+	next  *node
 }
 
 type lCache struct {
-	mutex  CleverMutex
-	store  []*node
-	length int
+	mutex     CleverMutex
+	store     []*node
+	length    int
 	cacheSize uint64
-	cacheBit uint64
+	cacheBit  uint64
 }
 
 func newLCache(cacheBitCount uint64) (cache ICache, err error) {
@@ -45,14 +45,14 @@ func (c *lCache) Set(key uint64, value interface{}) {
 			next:  nil,
 		}
 		c.store[cKey] = newNode
-		c.length ++
+		c.length++
 		return
 	}
 
 	for n := c.store[cKey]; n != nil; n = n.next {
 		if n.key == cLocalKey {
 			n.value = value
-			c.length ++
+			c.length++
 			return
 		}
 	}
@@ -63,7 +63,7 @@ func (c *lCache) Set(key uint64, value interface{}) {
 		next:  c.store[cKey],
 	}
 	c.store[cKey] = newNode
-	c.length ++
+	c.length++
 }
 
 func (c *lCache) Get(key uint64) (interface{}, bool) {
@@ -94,7 +94,7 @@ func (c *lCache) Delete(key uint64) bool {
 		return false
 	} else if p.key == cLocalKey {
 		c.store[cKey] = c.store[cKey].next
-		c.length --
+		c.length--
 		return true
 	}
 
@@ -104,7 +104,7 @@ func (c *lCache) Delete(key uint64) bool {
 		if n.key == cLocalKey {
 			p.next = n.next
 			n = nil
-			c.length --
+			c.length--
 			return true
 		}
 		p = n
@@ -141,7 +141,7 @@ func (c *lCache) Print() {
 	fmt.Print(s)
 }
 
-func (c *lCache) Iterator() <- chan interface{} {
+func (c *lCache) Iterator() <-chan interface{} {
 	c.mutex.WriteLock()
 	defer c.mutex.WriteUnlock()
 
