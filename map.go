@@ -5,12 +5,12 @@ import (
 )
 
 type mCache struct {
-	mutex     CleverMutex
+	mutex     cleverMutex
 	store     map[uint64]interface{}
 	cacheSize uint64
 }
 
-func newMCache(cacheSize uint64) (cache ICache, err error) {
+func newMCache(cacheSize uint64) (cache ICache) {
 
 	c := &mCache{}
 
@@ -18,7 +18,7 @@ func newMCache(cacheSize uint64) (cache ICache, err error) {
 
 	c.store = make(map[uint64]interface{}, c.cacheSize)
 	cache = c
-	return cache, nil
+	return cache
 }
 
 func (c *mCache) Set(key uint64, value interface{}) {
@@ -65,8 +65,8 @@ func (c *mCache) Iterator() <-chan interface{} {
 	res := make(chan interface{}, len(c.store))
 	defer close(res)
 
-	for k, _ := range c.store {
-		res <- c.store[k]
+	for _, v := range c.store {
+		res <- v
 	}
 
 	return res
@@ -76,8 +76,8 @@ func (c *mCache) Range(f func(key uint64, value interface{}) bool) {
 	c.mutex.WriteLock()
 	defer c.mutex.WriteUnlock()
 
-	for k, _ := range c.store {
-		if !f(k, c.store[k]) {
+	for k, v := range c.store {
+		if !f(k, v) {
 			return
 		}
 	}

@@ -5,14 +5,14 @@ import (
 )
 
 type sCache struct {
-	mutex     CleverMutex
+	mutex     cleverMutex
 	store     [][]interface{}
 	length    int
 	cacheSize uint64
 	cacheBit  uint64
 }
 
-func newSCache(cacheBitCount uint64) (cache ICache, err error) {
+func newSCache(cacheBitCount uint64) (cache ICache) {
 
 	c := &sCache{}
 
@@ -24,7 +24,7 @@ func newSCache(cacheBitCount uint64) (cache ICache, err error) {
 	c.length = 0
 	cache = c
 
-	return cache, nil
+	return cache
 }
 
 func (c *sCache) Set(key uint64, value interface{}) {
@@ -44,7 +44,6 @@ func (c *sCache) Set(key uint64, value interface{}) {
 		for i := uint64(0); i < lenLocal; i += 2 {
 			if c.store[cKey][i] == cLocalKey {
 				c.store[cKey][i+1] = value
-				c.length++
 				return
 			}
 		}
@@ -89,7 +88,7 @@ func (c *sCache) Delete(key uint64) bool {
 	}
 
 	lenLocal := uint64(len(c.store[cKey]))
-	if lenLocal == 2 {
+	if lenLocal == 2 && c.store[cKey][0] == cLocalKey {
 		c.store[cKey] = nil
 		c.length--
 		return true
@@ -117,17 +116,15 @@ func (c *sCache) Print() {
 	s := "{"
 
 	for cKey, vArr := range c.store {
-		if vArr != nil {
-			if vArr == nil {
-				continue
-			}
-			lenVArr := uint64(len(vArr))
-			for i := uint64(0); i < lenVArr; i += 2 {
-				cLocalKey := vArr[i]
-				value := vArr[i+1]
-				key := (cLocalKey.(uint64) << c.cacheBit) ^ uint64(cKey)
-				s += fmt.Sprintf("%v: %v, ", key, value)
-			}
+		if vArr == nil {
+			continue
+		}
+		lenVArr := uint64(len(vArr))
+		for i := uint64(0); i < lenVArr; i += 2 {
+			cLocalKey := vArr[i]
+			value := vArr[i+1]
+			key := (cLocalKey.(uint64) << c.cacheBit) ^ uint64(cKey)
+			s += fmt.Sprintf("%v: %v, ", key, value)
 		}
 	}
 	if s != "{" {
