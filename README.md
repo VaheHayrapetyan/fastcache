@@ -22,12 +22,12 @@ You must use NewCache function with which you will create the ICache interface. 
 
     func NewCache(bitCount uint64) ICache
 
-Let's try to understand the structure of our cache. If you are familiar with the structure of the map, you can easily understand it․    
+Let's try to understand the structure of the cache. If you are familiar with the structure of the map, you can easily understand it․    
 First, a vertical array is created, the size of which is determined by the bitCount value passed to the NewCache function: the size of this array or cache capacity is 2^bitCount.  
 
 Now let's understand how key-value data is stored. This also depends on the value of the bitCount.  
 1․ If the bitCount less than 20, the key-values are stored in a linked list created below the vertical array according to the index: each node in this list stores one key-value.           
-2․ If the bitCount is greater than or equal to 20, the key-values are stored in a slice created below the vertical array according to the index։ the keys are stored at even indexes, and the value corresponding to the key written at that even index is stored at the odd index following that even index. And with some bit operations, it is determined under which index of the main slice to store the key-value.    
+2․ If the bitCount is greater than or equal to 20, the key-values are stored in a slice created below the vertical array according to the index։ the keys are stored at even indexes, and the value corresponding to the key written at that even index is stored at the odd index following that even index.    
 
 Each key-value pair is stored in a vertical array in a slice or list at a specific index. The value of this index is determined by the bit operations performed on the key and the capacity of the vertical array.  
 Each key is stored in the cache not in its real value, and the value of each of them is changed in accordance with some bit operations, after which the result is stored in the cache as a key. 
