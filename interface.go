@@ -12,10 +12,14 @@ type ICache interface {
 	TestPrintAllStructure()
 }
 
-func NewCache(bitCount uint64) (cache ICache, err error) {
+func NewCache(bitCount uint64) ICache {
 	if bitCount >= 20 {
 		return newSCache(bitCount)
 	} else {
 		return newLCache(bitCount)
 	}
 }
+
+//TODO 1: add growing system
+//TODO 2: use generics for fixed type of values
+//TODO 3: add benchmark tests

@@ -2,33 +2,33 @@ package fastcache
 
 import "sync"
 
-type CleverMutex struct {
+type cleverMutex struct {
 	readMutex  sync.Mutex
 	writeMutex sync.Mutex
 }
 
-func (cm *CleverMutex) ReadLock() {
+func (cm *cleverMutex) ReadLock() {
 	cm.readMutex.Lock()
 }
 
-func (cm *CleverMutex) WriteLock() {
+func (cm *cleverMutex) WriteLock() {
 	cm.writeMutex.Lock()
 }
 
-func (cm *CleverMutex) ReadUnlock() {
+func (cm *cleverMutex) ReadUnlock() {
 	cm.readMutex.Unlock()
 }
 
-func (cm *CleverMutex) WriteUnlock() {
+func (cm *cleverMutex) WriteUnlock() {
 	cm.writeMutex.Unlock()
 }
 
-func (cm *CleverMutex) Lock() {
+func (cm *cleverMutex) Lock() {
 	cm.readMutex.Lock()
 	cm.writeMutex.Lock()
 }
 
-func (cm *CleverMutex) Unlock() {
+func (cm *cleverMutex) Unlock() {
 	cm.readMutex.Unlock()
 	cm.writeMutex.Unlock()
 }

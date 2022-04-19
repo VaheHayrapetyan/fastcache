@@ -9,14 +9,14 @@ type node struct {
 }
 
 type lCache struct {
-	mutex     CleverMutex
+	mutex     cleverMutex
 	store     []*node
 	length    int
 	cacheSize uint64
 	cacheBit  uint64
 }
 
-func newLCache(cacheBitCount uint64) (cache ICache, err error) {
+func newLCache(cacheBitCount uint64) (cache ICache) {
 
 	c := &lCache{}
 
@@ -28,7 +28,7 @@ func newLCache(cacheBitCount uint64) (cache ICache, err error) {
 	c.length = 0
 	cache = c
 
-	return cache, nil
+	return cache
 }
 
 func (c *lCache) Set(key uint64, value interface{}) {
@@ -52,7 +52,6 @@ func (c *lCache) Set(key uint64, value interface{}) {
 	for n := c.store[cKey]; n != nil; n = n.next {
 		if n.key == cLocalKey {
 			n.value = value
-			c.length++
 			return
 		}
 	}
